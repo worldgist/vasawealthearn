@@ -1,5 +1,7 @@
 "use client"
 
+export const dynamic = 'force-dynamic'
+
 import { useState, useEffect } from "react"
 import { DollarSign, CheckCircle, XCircle, Eye, Download, Search, Filter, Clock, User, FileText, Image as ImageIcon, Mail, Bell } from "lucide-react"
 import {

@@ -1,13 +1,15 @@
 "use client"
 
-import { useEffect, useState } from "react"
+export const dynamic = 'force-dynamic'
+
+import { useEffect, useState, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle, ArrowLeft, Download, Share2, TrendingUp } from "lucide-react"
 
-export default function InvestmentSuccessPage() {
+function InvestmentSuccessContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [investmentDetails, setInvestmentDetails] = useState<any>(null)
@@ -163,5 +165,22 @@ export default function InvestmentSuccessPage() {
         </div>
       </div>
     </DashboardLayout>
+  )
+}
+
+export default function InvestmentSuccessPage() {
+  return (
+    <Suspense fallback={
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0c3a30] mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    }>
+      <InvestmentSuccessContent />
+    </Suspense>
   )
 }
