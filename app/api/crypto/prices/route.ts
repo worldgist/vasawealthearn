@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server"
 
+// Mark this route as dynamic since it uses request.url
+export const dynamic = 'force-dynamic'
+
 // CoinGecko API endpoint
 const COINGECKO_API_URL = "https://api.coingecko.com/api/v3"
 
