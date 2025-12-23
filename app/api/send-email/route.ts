@@ -3,8 +3,6 @@ import { createClient } from "@/lib/supabase/server"
 import { Resend } from "resend"
 import { generateReceiptHTML, generateReceiptId, generateInvoiceNumber, ReceiptData } from "@/lib/receipts/generate-receipt"
 
-const resend = new Resend(process.env.RESEND_API_KEY || process.env.NEXT_PUBLIC_RESEND_API_KEY)
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -15,13 +13,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Use Resend to send email
-    if (!process.env.RESEND_API_KEY && !process.env.NEXT_PUBLIC_RESEND_API_KEY) {
+    const apiKey = process.env.RESEND_API_KEY || process.env.NEXT_PUBLIC_RESEND_API_KEY
+    if (!apiKey) {
       console.error("RESEND_API_KEY is not set")
       return NextResponse.json(
         { error: "Email service not configured. Please set RESEND_API_KEY." },
         { status: 500 }
       )
     }
+
+    // Initialize Resend only when needed (not at module level to avoid build-time errors)
+    const resend = new Resend(apiKey)
 
     let emailContent = html || text || (template ? getEmailTemplate(template, data) : "")
     let receiptHtml = ""
