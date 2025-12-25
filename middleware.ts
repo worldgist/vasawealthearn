@@ -52,11 +52,19 @@ export async function middleware(request: NextRequest) {
   // Admin routes
   const isAdminRoute = request.nextUrl.pathname.startsWith("/admin")
 
+  // KYC verification page - allow access for authenticated users
+  const isKYCRoute = request.nextUrl.pathname === "/dashboard/kyc-verification"
+
   if (isProtectedRoute && !user) {
     // Redirect to login if not authenticated
     const redirectUrl = new URL("/login", request.url)
     redirectUrl.searchParams.set("redirect", request.nextUrl.pathname)
     return NextResponse.redirect(redirectUrl)
+  }
+
+  // Allow access to KYC page for authenticated users
+  if (isKYCRoute && user) {
+    return response
   }
 
   // Allow access to auth routes even if user is authenticated

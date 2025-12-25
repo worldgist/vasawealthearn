@@ -133,16 +133,27 @@ export function OTPVerification() {
 
         toast({
           title: "Email Verified!",
-          description: "Your email has been successfully verified.",
+          description: "Your email has been successfully verified. Please complete your KYC verification.",
         })
 
+        // Check if user is coming from signup flow
+        const isFromSignup = typeof window !== "undefined" && sessionStorage.getItem("signup_email")
+        
         // Clear session storage
         if (typeof window !== "undefined") {
           sessionStorage.removeItem("signup_email")
+          // Set flag to indicate user should complete KYC
+          if (isFromSignup) {
+            sessionStorage.setItem("require_kyc", "true")
+          }
         }
 
-        // Redirect to dashboard
-        router.push("/dashboard")
+        // Redirect to KYC verification if coming from signup, otherwise dashboard
+        if (isFromSignup) {
+          router.push("/dashboard/kyc-verification")
+        } else {
+          router.push("/dashboard")
+        }
         router.refresh()
       } else {
         throw new Error("Verification failed. No user data returned.")

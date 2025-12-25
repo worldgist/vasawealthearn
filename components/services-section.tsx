@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { ArrowUpRight, ArrowRight, ArrowLeft, Home, Coins, TrendingUp } from "lucide-react"
+import { ArrowUpRight, ArrowRight, ArrowLeft, Home, Coins, TrendingUp, Percent, Shield, Zap, Clock, Globe } from "lucide-react"
 import Link from "next/link"
 
 export function ServicesSection() {
@@ -12,6 +12,12 @@ export function ServicesSection() {
       href: "/dashboard/real-estate",
       color: "bg-orange-50",
       iconColor: "bg-orange-500",
+      highlights: [
+        { label: "Avg Return", value: "10.5%", icon: Percent },
+        { label: "Min Investment", value: "$5,000", icon: Shield },
+        { label: "Risk Level", value: "Low-Medium", icon: Shield },
+      ],
+      features: ["Property Management", "Tax Benefits", "Passive Income", "Inflation Hedge"]
     },
     {
       title: "Cryptocurrency Investment",
@@ -21,15 +27,27 @@ export function ServicesSection() {
       href: "/dashboard/save-invest",
       color: "bg-yellow-50",
       iconColor: "bg-yellow-500",
+      highlights: [
+        { label: "Avg Return", value: "15-25%", icon: Percent },
+        { label: "Min Investment", value: "$100", icon: Shield },
+        { label: "24/7 Trading", value: "Available", icon: Clock },
+      ],
+      features: ["20+ Cryptocurrencies", "Real-time Trading", "Cold Storage", "Low Fees"]
     },
     {
       title: "Stock Investments",
       description: "Access global stock markets and build a diversified portfolio. Invest in blue-chip stocks, ETFs, and index funds with professional guidance.",
       image: "/personal-loan-illustration.png",
       icon: TrendingUp,
-      href: "/dashboard",
+      href: "/dashboard/stocks",
       color: "bg-blue-50",
       iconColor: "bg-blue-500",
+      highlights: [
+        { label: "Avg Return", value: "12-15%", icon: Percent },
+        { label: "Min Investment", value: "$500", icon: Shield },
+        { label: "Global Markets", value: "Access", icon: Globe },
+      ],
+      features: ["Blue-chip Stocks", "ETFs & Index Funds", "Dividend Income", "Professional Guidance"]
     },
   ]
 
@@ -91,7 +109,33 @@ export function ServicesSection() {
                           </div>
                           <h3 className="text-xl font-bold text-gray-900">{service.title}</h3>
                           <p className="text-gray-600 text-sm leading-relaxed">{service.description}</p>
-                          <div className="flex items-center gap-2 text-[#0c3a30] font-semibold group-hover:gap-3 transition-all">
+                          
+                          {/* Highlights */}
+                          <div className="grid grid-cols-3 gap-2 pt-3 border-t border-gray-200">
+                            {service.highlights.map((highlight, idx) => {
+                              const HighlightIcon = highlight.icon
+                              return (
+                                <div key={idx} className="text-center">
+                                  <HighlightIcon className="w-4 h-4 mx-auto mb-1 text-gray-600" />
+                                  <div className="text-xs font-semibold text-gray-900">{highlight.value}</div>
+                                  <div className="text-xs text-gray-500">{highlight.label}</div>
+                                </div>
+                              )
+                            })}
+                          </div>
+
+                          {/* Features */}
+                          <div className="pt-3 border-t border-gray-200">
+                            <div className="flex flex-wrap gap-2">
+                              {service.features.map((feature, idx) => (
+                                <span key={idx} className="text-xs bg-white/60 px-2 py-1 rounded-full text-gray-700 font-medium">
+                                  {feature}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 text-[#0c3a30] font-semibold group-hover:gap-3 transition-all pt-2">
                             Invest Now <ArrowUpRight className="w-4 h-4" />
                           </div>
                         </div>

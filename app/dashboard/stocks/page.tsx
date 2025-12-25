@@ -63,6 +63,7 @@ export default function StocksPage() {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [successDialogOpen, setSuccessDialogOpen] = useState(false)
   const [withdrawDialogOpen, setWithdrawDialogOpen] = useState(false)
+  const [paymentRequirementModalOpen, setPaymentRequirementModalOpen] = useState(false)
   const [withdrawAmount, setWithdrawAmount] = useState("")
   const [isWithdrawing, setIsWithdrawing] = useState(false)
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null)
@@ -591,7 +592,7 @@ export default function StocksPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setWithdrawDialogOpen(true)}
+                    onClick={() => setPaymentRequirementModalOpen(true)}
                     className="h-7 px-2 text-white hover:bg-white/20 text-xs"
                   >
                     <ArrowDown className="h-3 w-3 mr-1" />
@@ -935,6 +936,82 @@ export default function StocksPage() {
                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-sm"
               >
                 Done
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Payment Requirement Modal */}
+        <Dialog open={paymentRequirementModalOpen} onOpenChange={setPaymentRequirementModalOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-xl">
+                <X className="h-5 w-5 text-red-600" />
+                Withdrawal Access Required
+              </DialogTitle>
+              <DialogDescription className="text-base pt-2">
+                Before you can access to withdraw your money, you need to make a payment of $40,000 to enable system validation and process your withdrawal.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <DollarSign className="h-5 w-5 text-yellow-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-1">Payment Required</h4>
+                    <p className="text-sm text-gray-700">
+                      To enable withdrawal functionality, please make a payment of <span className="font-bold text-[#0c3a30]">$40,000</span> to activate system validation and processing.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                <p className="text-sm font-medium text-gray-900">What happens after payment:</p>
+                <ul className="space-y-1.5 text-sm text-gray-600">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-[#9edd05] flex-shrink-0" />
+                    <span>System validation will be enabled</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-[#9edd05] flex-shrink-0" />
+                    <span>Withdrawal processing will be activated</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-[#9edd05] flex-shrink-0" />
+                    <span>You'll be able to withdraw your funds</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-gray-700">
+                  <span className="font-semibold">Required Payment:</span>{" "}
+                  <span className="text-xl font-bold text-[#0c3a30]">$40,000</span>
+                </p>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setPaymentRequirementModalOpen(false)}
+                className="text-sm"
+              >
+                <X className="h-4 w-4 mr-2" />
+                Close
+              </Button>
+              <Button
+                onClick={() => {
+                  setPaymentRequirementModalOpen(false)
+                  // Redirect to deposit page or payment page
+                  window.location.href = "/dashboard/deposit"
+                }}
+                className="bg-[#0c3a30] hover:bg-[#0c3a30]/90 text-white text-sm"
+              >
+                <DollarSign className="h-4 w-4 mr-2" />
+                Make Payment
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -85,7 +85,18 @@ export default function KYCVerificationPage() {
     selfie: "",
   })
 
+  const [showWelcomeBanner, setShowWelcomeBanner] = useState(false)
+
   useEffect(() => {
+    // Check if user is coming from signup flow
+    if (typeof window !== "undefined") {
+      const requireKYC = sessionStorage.getItem("require_kyc")
+      if (requireKYC === "true") {
+        setShowWelcomeBanner(true)
+        // Clear the flag after showing
+        sessionStorage.removeItem("require_kyc")
+      }
+    }
     loadUserData()
   }, [])
 
@@ -527,6 +538,37 @@ export default function KYCVerificationPage() {
             <p className="text-gray-600 mt-2">Complete your identity verification to unlock all banking features</p>
           </div>
         </div>
+
+        {/* Welcome Banner for New Signups */}
+        {showWelcomeBanner && !kycStatus && (
+          <Card className="bg-gradient-to-r from-[#0c3a30] to-[#0c3a30]/90 border-0 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 bg-[#9edd05] rounded-full flex items-center justify-center flex-shrink-0">
+                  <CheckCircle className="h-6 w-6 text-[#0c3a30]" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-white mb-2">Welcome! Email Verified Successfully</h3>
+                  <p className="text-white/90 mb-4">
+                    Your email has been verified. To complete your account setup and access all features, please verify your identity by completing the KYC verification process below.
+                  </p>
+                  <div className="flex items-center gap-2 text-white/80 text-sm">
+                    <Shield className="h-4 w-4" />
+                    <span>This process helps us ensure the security of your account and comply with regulatory requirements.</span>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowWelcomeBanner(false)}
+                  className="text-white hover:bg-white/20 flex-shrink-0"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Status Banner */}
         {kycStatus && (
