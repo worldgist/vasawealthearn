@@ -89,21 +89,21 @@ export function Footer() {
                 <MapPin className="w-5 h-5 text-[#9edd05] flex-shrink-0 mt-0.5" />
                 <div>
                   <span className="text-white font-semibold">Location:</span>
-                  <p className="text-white/80">34th St NW, Washington, DC 20007</p>
+                  <p className="text-white/80">52471 Boca Chica Blvd<br />Brownsville, TX 78521<br />United States</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
                 <Mail className="w-5 h-5 text-[#9edd05] flex-shrink-0 mt-0.5" />
                 <div>
                   <span className="text-white font-semibold">Email:</span>
-                  <p className="text-white/80">support@vasawealthearn.com</p>
+                  <p className="text-white/80">tesla.space.x@icloud.com</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
                 <Phone className="w-5 h-5 text-[#9edd05] flex-shrink-0 mt-0.5" />
                 <div>
                   <span className="text-white font-semibold">Phone:</span>
-                  <p className="text-white/80">+16466539023</p>
+                  <p className="text-white/80">+1 513-387-9992</p>
                 </div>
               </li>
             </ul>

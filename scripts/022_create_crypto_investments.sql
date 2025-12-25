@@ -105,3 +105,5 @@ CREATE TRIGGER calculate_crypto_investment_trigger
     EXECUTE FUNCTION calculate_crypto_investment_value();
 
 
+
+

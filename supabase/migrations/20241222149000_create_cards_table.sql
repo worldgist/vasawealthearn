@@ -71,3 +71,5 @@ CREATE TRIGGER update_cards_updated_at_trigger
   EXECUTE FUNCTION update_cards_updated_at();
 
 
+
+

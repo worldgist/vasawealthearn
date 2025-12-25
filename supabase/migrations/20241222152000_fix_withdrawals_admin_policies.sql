@@ -13,3 +13,5 @@ CREATE POLICY "withdrawals_update_all"
   USING (auth.uid() IS NOT NULL);
 
 
+
+

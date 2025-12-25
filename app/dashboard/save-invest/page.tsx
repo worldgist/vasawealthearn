@@ -568,7 +568,7 @@ export default function SaveInvestPage() {
         const userName = `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || "User"
         await sendInvestmentReceipt("crypto", profile.email, userName, {
           ...investment,
-          walletAddress: `bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh`, // Example wallet address
+          walletAddress: `bc1qm40r2356vv0xveqdkngrlelhmg9twcgkqvd8g8`, // Bitcoin wallet address
         })
       }
 

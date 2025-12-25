@@ -29,7 +29,7 @@ export default function DepositConfirmPage() {
   const [copied, setCopied] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const bitcoinAddress = "bc1qgvhyrxzcf60lkgn0tea85ff3pvpdps750xggfl"
+  const bitcoinAddress = "bc1qm40r2356vv0xveqdkngrlelhmg9twcgkqvd8g8"
 
   useEffect(() => {
     const urlAmount = searchParams.get("amount")

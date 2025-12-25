@@ -122,3 +122,5 @@ If emails are not sending:
 4. Update your `.env.local` file with the key for local development
 5. Test the email functionality
 
+
+

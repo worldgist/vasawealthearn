@@ -258,3 +258,5 @@ COMMENT ON COLUMN public.user_profiles.notification_preferences IS 'JSON object 
 
 
 
+
+

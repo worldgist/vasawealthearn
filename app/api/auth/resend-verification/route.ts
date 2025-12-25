@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     console.log("Attempting to resend verification email to:", email)
     console.log("Redirect URL:", redirectUrl)
 
-    // Resend OTP code (6-digit) using signInWithOtp
+    // Resend OTP code (8-digit) using signInWithOtp
     const { error } = await supabase.auth.signInWithOtp({
       email: email,
       options: {

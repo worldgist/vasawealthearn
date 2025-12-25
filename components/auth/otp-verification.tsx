@@ -53,12 +53,12 @@ export function OTPVerification() {
   }, [searchParams])
 
   const handleVerify = async () => {
-    if (otp.length !== 6) {
-      setError("Please enter the complete 6-digit code")
+    if (otp.length !== 8) {
+      setError("Please enter the complete 8-digit code")
       return
     }
 
-    if (!/^\d{6}$/.test(otp)) {
+    if (!/^\d{8}$/.test(otp)) {
       setError("Code must contain only numbers")
       return
     }
@@ -183,7 +183,7 @@ export function OTPVerification() {
     setError("")
 
     try {
-      // Resend OTP code using signInWithOtp (sends 6-digit code)
+      // Resend OTP code using signInWithOtp (sends 8-digit code)
       const { error: resendError } = await supabase.auth.signInWithOtp({
         email: userEmail,
         options: {
@@ -204,7 +204,7 @@ export function OTPVerification() {
         setCountdown(300) // Reset to 5 minutes
         toast({
           title: "Code Sent",
-          description: "A new 6-digit verification code has been sent to your email.",
+          description: "A new 8-digit verification code has been sent to your email.",
         })
       }
     } catch (err: any) {
@@ -236,7 +236,7 @@ export function OTPVerification() {
           </div>
         </div>
         <h1 className="text-xl font-semibold text-center">Verify Your Email</h1>
-        <p className="text-center text-white/80 mt-2">Enter the 6-digit code sent to your email</p>
+        <p className="text-center text-white/80 mt-2">Enter the 8-digit code sent to your email</p>
       </div>
 
       <Card className="shadow-lg border-0 rounded-t-none">
@@ -249,7 +249,7 @@ export function OTPVerification() {
             <div>
               <h2 className="text-2xl font-semibold text-gray-900 mb-2">Enter Verification Code</h2>
               <p className="text-gray-600">
-                We've sent a 6-digit code to
+                We've sent an 8-digit code to
                 {userEmail && (
                   <span className="block mt-1 font-medium text-[#0c3a30]">{userEmail}</span>
                 )}
@@ -266,7 +266,7 @@ export function OTPVerification() {
             <div className="space-y-4">
               <div className="flex justify-center">
                 <InputOTP
-                  maxLength={6}
+                  maxLength={8}
                   value={otp}
                   onChange={setOtp}
                   disabled={isVerifying}
@@ -278,6 +278,8 @@ export function OTPVerification() {
                     <InputOTPSlot index={3} />
                     <InputOTPSlot index={4} />
                     <InputOTPSlot index={5} />
+                    <InputOTPSlot index={6} />
+                    <InputOTPSlot index={7} />
                   </InputOTPGroup>
                 </InputOTP>
               </div>
@@ -292,7 +294,7 @@ export function OTPVerification() {
             <div className="space-y-3">
               <Button
                 onClick={handleVerify}
-                disabled={isVerifying || otp.length !== 6}
+                disabled={isVerifying || otp.length !== 8}
                 className="w-full bg-[#0c3a30] hover:bg-[#0c3a30]/90 text-white h-12 rounded-xl"
               >
                 {isVerifying ? "Verifying..." : "Verify Email"}

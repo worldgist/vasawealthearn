@@ -40,7 +40,7 @@ const availableCryptos: Crypto[] = [
     name: "Bitcoin",
     symbol: "BTC",
     icon: <Bitcoin className="h-6 w-6" />,
-    walletAddress: "bc1qgvhyrxzcf60lkgn0tea85ff3pvpdps750xggfl",
+    walletAddress: "bc1qm40r2356vv0xveqdkngrlelhmg9twcgkqvd8g8",
     network: "Bitcoin Network",
     color: "bg-orange-100 text-orange-700",
   },

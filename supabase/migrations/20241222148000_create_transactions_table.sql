@@ -77,3 +77,5 @@ CREATE TRIGGER update_transactions_updated_at_trigger
   EXECUTE FUNCTION update_transactions_updated_at();
 
 
+
+

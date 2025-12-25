@@ -311,13 +311,13 @@ export function SignupForm() {
             console.warn("WARNING: Email confirmation code was not sent. Check Supabase email settings.")
             toast({
               title: "Account Created!",
-              description: "Please check your email for a 6-digit verification code. If you don't receive it, use the resend button.",
+              description: "Please check your email for an 8-digit verification code. If you don't receive it, use the resend button.",
               variant: "default",
             })
           } else {
             toast({
               title: "Account Created!",
-              description: "Please check your email (including spam folder) for a 6-digit verification code.",
+              description: "Please check your email (including spam folder) for an 8-digit verification code.",
             })
           }
           

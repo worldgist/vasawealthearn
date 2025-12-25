@@ -80,3 +80,5 @@ CREATE TRIGGER update_notifications_updated_at_trigger
   EXECUTE FUNCTION update_notifications_updated_at();
 
 
+
+

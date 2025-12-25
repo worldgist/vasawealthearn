@@ -1,6 +1,6 @@
-# Supabase OTP (6-Digit Code) Setup Guide
+# Supabase OTP (8-Digit Code) Setup Guide
 
-## Configure Supabase to Send 6-Digit Codes
+## Configure Supabase to Send 8-Digit Codes
 
 ### Step 1: Enable Email OTP in Supabase
 
@@ -18,8 +18,8 @@
 
 2. Edit the **Confirm signup** template:
    - Replace the confirmation link with: `Your verification code is: {{ .Token }}`
-   - Or use: `Your 6-digit verification code is: {{ .Token }}`
-   - The code will be a 6-digit number
+   - Or use: `Your 8-digit verification code is: {{ .Token }}`
+   - The code will be an 8-digit number
 
 ### Step 3: Alternative - Use Magic Link with OTP
 
@@ -31,13 +31,13 @@ If Supabase doesn't support OTP directly in signup, you can:
 ### Step 4: Test OTP Flow
 
 1. Sign up with a test email
-2. Check your email for a 6-digit code
+2. Check your email for an 8-digit code
 3. Enter the code on the verification page
 4. Code should verify and redirect to dashboard
 
 ## How It Works
 
-1. User signs up → Supabase sends email with 6-digit code
+1. User signs up → Supabase sends email with 8-digit code
 2. User enters code on verification page
 3. Code is verified using `supabase.auth.verifyOtp()`
 4. User is redirected to dashboard upon successful verification
@@ -69,7 +69,7 @@ The verification uses:
 ```typescript
 await supabase.auth.verifyOtp({
   email: userEmail,
-  token: otpCode, // 6-digit code
+  token: otpCode, // 8-digit code
   type: "signup",
 })
 ```
@@ -80,6 +80,8 @@ If Supabase doesn't send OTP codes by default with `signUp`, you may need to:
 1. Use `signInWithOtp` for email verification flow
 2. Or configure custom email templates to include the OTP code
 3. Or use a third-party email service that supports OTP
+
+
 
 
 

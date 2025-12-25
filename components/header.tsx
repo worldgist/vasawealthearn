@@ -18,13 +18,13 @@ export function Header() {
               <div className="flex items-center gap-2 justify-center sm:justify-start">
                 <Phone className="w-4 h-4" />
                 <span>
-                  <strong>Call:</strong> +16466539023
+                  <strong>Call:</strong> +15037715674
                 </span>
               </div>
               <div className="flex items-center gap-2 justify-center sm:justify-start">
                 <Mail className="w-4 h-4" />
                 <span>
-                  <strong>Mail:</strong> support@vasawealthearn.com
+                  <strong>Mail:</strong> versawealthearn@gmail.com
                 </span>
               </div>
             </div>

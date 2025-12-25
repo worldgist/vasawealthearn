@@ -79,3 +79,5 @@ CREATE INDEX IF NOT EXISTS idx_kyc_submissions_status ON public.kyc_submissions(
 CREATE INDEX IF NOT EXISTS idx_kyc_submissions_submitted_at ON public.kyc_submissions(submitted_at DESC);
 
 
+
+

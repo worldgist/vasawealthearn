@@ -81,7 +81,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Note: OTP verification (6-digit code) is handled on the verify-email page
+  // Note: OTP verification (8-digit code) is handled on the verify-email page
   // Users enter the code manually, so no automatic redirect is needed here
 
   return response
