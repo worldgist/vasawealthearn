@@ -42,47 +42,88 @@ export default function AdminKYCPage() {
   const loadKycRequests = async () => {
     try {
       setIsLoading(true)
-      const { data: submissions, error } = await supabase
+      
+      // First, get all KYC submissions
+      const { data: submissions, error: submissionsError } = await supabase
         .from("kyc_submissions")
-        .select(`
-          *,
-          profiles:user_id (
-            email,
-            first_name,
-            last_name
-          )
-        `)
+        .select("*")
         .order("submitted_at", { ascending: false })
 
-      if (error) {
-        console.error("Error loading KYC submissions:", error)
+      if (submissionsError) {
+        console.error("Error loading KYC submissions:", submissionsError)
         toast({
           title: "Error",
-          description: "Failed to load KYC submissions.",
+          description: `Failed to load KYC submissions: ${submissionsError.message}`,
           variant: "destructive",
         })
         setIsLoading(false)
         return
       }
 
+      console.log("Raw submissions from database:", submissions?.length || 0)
+      
+      if (!submissions || submissions.length === 0) {
+        console.log("No KYC submissions found in database")
+        setKycRequests([])
+        setIsLoading(false)
+        return
+      }
+
+      // Get all user IDs from submissions
+      const userIds = [...new Set(submissions.map((s: any) => s.user_id).filter(Boolean))]
+      console.log("User IDs from submissions:", userIds.length)
+      
+      // Fetch profiles for all users (if we have user IDs)
+      let profiles: any[] = []
+      if (userIds.length > 0) {
+        const { data: profilesData, error: profilesError } = await supabase
+          .from("profiles")
+          .select("id, email, first_name, last_name")
+          .in("id", userIds)
+
+        if (profilesError) {
+          console.error("Error loading profiles:", profilesError)
+        } else {
+          profiles = profilesData || []
+          console.log("Loaded profiles:", profiles.length)
+        }
+      }
+
+      // Create a map of user_id to profile
+      const profileMap = new Map()
+      if (profiles) {
+        profiles.forEach((profile: any) => {
+          profileMap.set(profile.id, profile)
+        })
+      }
+
       // Transform data to match expected format
-      const transformedSubmissions = (submissions || []).map((submission: any) => ({
-        id: submission.id,
-        userId: submission.user_id,
-        userName: submission.first_name && submission.last_name
-          ? `${submission.first_name} ${submission.last_name}`
-          : submission.profiles
-          ? `${submission.profiles.first_name || ""} ${submission.profiles.last_name || ""}`.trim()
-          : "Unknown User",
-        userEmail: submission.profiles?.email || "Unknown",
-        firstName: submission.first_name,
-        middleName: submission.middle_name,
-        lastName: submission.last_name,
-        dateOfBirth: submission.date_of_birth,
-        ssn: submission.ssn,
+      const transformedSubmissions = (submissions || []).map((submission: any) => {
+        const profile = profileMap.get(submission.user_id)
+        
+        return {
+          id: submission.id,
+          userId: submission.user_id,
+          userName: submission.first_name && submission.last_name
+            ? `${submission.first_name} ${submission.last_name}`
+            : profile
+            ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || "Unknown User"
+            : "Unknown User",
+          userEmail: profile?.email || "Unknown",
+          firstName: submission.first_name,
+          middleName: submission.middle_name,
+          lastName: submission.last_name,
+          dateOfBirth: submission.date_of_birth,
+          ssn: submission.ssn,
         licenseNumber: submission.license_number,
         licenseState: submission.license_state,
         licenseExpiry: submission.license_expiry,
+        idCardNumber: submission.id_card_number,
+        idCardIssuingCountry: submission.id_card_issuing_country,
+        idCardExpiry: submission.id_card_expiry,
+        passportNumber: submission.passport_number,
+        passportIssuingCountry: submission.passport_issuing_country,
+        passportExpiry: submission.passport_expiry,
         streetAddress: submission.street_address,
         city: submission.city,
         state: submission.state,
@@ -90,13 +131,19 @@ export default function AdminKYCPage() {
         country: submission.country,
         licenseFrontUrl: submission.license_front_url,
         licenseBackUrl: submission.license_back_url,
+        idCardFrontUrl: submission.id_card_front_url,
+        idCardBackUrl: submission.id_card_back_url,
+        passportFrontUrl: submission.passport_front_url,
+        passportBackUrl: submission.passport_back_url,
         selfieUrl: submission.selfie_url,
-        status: submission.status,
-        rejectionReason: submission.rejection_reason,
-        submittedAt: submission.submitted_at,
-        reviewedAt: submission.reviewed_at,
-      }))
+          status: submission.status || "pending",
+          rejectionReason: submission.rejection_reason,
+          submittedAt: submission.submitted_at || submission.created_at,
+          reviewedAt: submission.reviewed_at,
+        }
+      })
 
+      console.log("Loaded KYC submissions:", transformedSubmissions.length)
       setKycRequests(transformedSubmissions)
     } catch (error) {
       console.error("Error loading KYC requests:", error)
@@ -606,12 +653,32 @@ export default function AdminKYCPage() {
                                   License Back
                                 </span>
                               )}
+                              {kyc.idCardFrontUrl && (
+                                <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                                  ID Front
+                                </span>
+                              )}
+                              {kyc.idCardBackUrl && (
+                                <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                                  ID Back
+                                </span>
+                              )}
+                              {kyc.passportFrontUrl && (
+                                <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                                  Passport Front
+                                </span>
+                              )}
+                              {kyc.passportBackUrl && (
+                                <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                                  Passport Back
+                                </span>
+                              )}
                               {kyc.selfieUrl && (
                                 <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                                   Selfie
                                 </span>
                               )}
-                              {!kyc.licenseFrontUrl && !kyc.licenseBackUrl && !kyc.selfieUrl && (
+                              {!kyc.licenseFrontUrl && !kyc.licenseBackUrl && !kyc.idCardFrontUrl && !kyc.idCardBackUrl && !kyc.passportFrontUrl && !kyc.passportBackUrl && !kyc.selfieUrl && (
                                 <span className="text-xs text-gray-500">No documents</span>
                               )}
                               {kyc.documents?.map((doc: string, idx: number) => (

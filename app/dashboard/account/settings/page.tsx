@@ -24,6 +24,7 @@ export default function SettingsPage() {
   const router = useRouter()
   const supabase = createClient()
 
+  const [accountNumber, setAccountNumber] = useState("")
   const [formData, setFormData] = useState({
     first_name: "",
     middle_name: "",
@@ -67,6 +68,7 @@ export default function SettingsPage() {
       }
 
       if (profile) {
+        setAccountNumber(profile.account_number || "")
         setFormData({
           first_name: profile.first_name || "",
           middle_name: profile.middle_name || "",
@@ -399,7 +401,7 @@ export default function SettingsPage() {
                 <div className="relative">
                   <Input
                     id="accountNumber"
-                    value={formData.first_name && formData.last_name ? "9846850999" : "Loading..."}
+                    value={accountNumber || "Loading..."}
                     className="pr-10 bg-gray-50 border-gray-200"
                     readOnly
                   />

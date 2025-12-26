@@ -27,6 +27,7 @@ import { createClient } from "@/lib/supabase/client"
 export function DashboardContent() {
   const [balanceVisible, setBalanceVisible] = useState(true)
   const [userName, setUserName] = useState("User")
+  const [firstName, setFirstName] = useState("")
   const [accountNumber, setAccountNumber] = useState("")
   const [balance, setBalance] = useState(0.00)
   const [isLoading, setIsLoading] = useState(true)
@@ -67,11 +68,14 @@ export function DashboardContent() {
       if (profile) {
         const fullName = `${profile.first_name || ""} ${profile.last_name || ""}`.trim()
         setUserName(fullName || user.email?.split("@")[0] || "User")
+        setFirstName(profile.first_name || user.email?.split("@")[0] || "User")
         setAccountNumber(profile.account_number || "")
         setBalance(profile.balance || profile.account_balance || 0.00)
       } else {
         // Fallback to user email
-        setUserName(user.email?.split("@")[0] || "User")
+        const emailName = user.email?.split("@")[0] || "User"
+        setUserName(emailName)
+        setFirstName(emailName)
       }
     } catch (error) {
       console.error("Error loading user data:", error)
@@ -90,17 +94,14 @@ export function DashboardContent() {
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-white font-bold text-sm sm:text-base">
-                  {userName
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .toUpperCase()
-                    .slice(0, 2)}
+                  {firstName 
+                    ? firstName.charAt(0).toUpperCase()
+                    : (userName.split(" ")[0]?.charAt(0) || "U").toUpperCase()}
                 </span>
               </div>
               <div>
                 <h2 className="text-sm sm:text-lg font-medium">Good Morning</h2>
-                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold">{userName}</h1>
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold">{firstName || userName}</h1>
               </div>
             </div>
             {/* Eye Icon Toggle */}

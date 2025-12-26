@@ -1,3 +1,5 @@
+import Image from "next/image"
+
 export function PartnersSection() {
   const partners = [
     "/abstract-tech-logo.png",
@@ -19,10 +21,13 @@ export function PartnersSection() {
         <div className="flex flex-wrap justify-center items-center gap-8 lg:gap-12 opacity-60">
           {partners.map((partner, index) => (
             <div key={index} className="grayscale hover:grayscale-0 transition-all duration-300">
-              <img
+              <Image
                 src={partner || "/placeholder.svg"}
                 alt={`Partner ${index + 1}`}
+                width={120}
+                height={48}
                 className="h-12 w-auto object-contain filter brightness-0 invert"
+                loading="lazy"
               />
             </div>
           ))}

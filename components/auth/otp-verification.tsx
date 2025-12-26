@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
-import { Mail, ArrowLeft } from "lucide-react"
+import { Mail, ArrowLeft, ArrowRight } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { useToast } from "@/hooks/use-toast"
@@ -308,7 +308,17 @@ export function OTPVerification() {
                 disabled={isVerifying || otp.length !== 8}
                 className="w-full bg-[#0c3a30] hover:bg-[#0c3a30]/90 text-white h-12 rounded-xl"
               >
-                {isVerifying ? "Verifying..." : "Verify Email"}
+                {isVerifying ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Verifying...
+                  </>
+                ) : (
+                  <>
+                    Next
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </>
+                )}
               </Button>
 
               <Button

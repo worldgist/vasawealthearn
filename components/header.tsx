@@ -2,8 +2,9 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Phone, Mail, Menu, X } from "lucide-react"
+import { Menu, X, MessageCircle } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -15,18 +16,17 @@ export function Header() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center text-sm">
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-2 md:mb-0">
-              <div className="flex items-center gap-2 justify-center sm:justify-start">
-                <Phone className="w-4 h-4" />
+              <a 
+                href="https://t.me/vasawealthearn" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 justify-center sm:justify-start hover:opacity-80 transition-opacity"
+              >
+                <MessageCircle className="w-4 h-4" />
                 <span>
-                  <strong>Call:</strong> +15037715674
+                  <strong>Telegram:</strong> @vasawealthearn
                 </span>
-              </div>
-              <div className="flex items-center gap-2 justify-center sm:justify-start">
-                <Mail className="w-4 h-4" />
-                <span>
-                  <strong>Mail:</strong> versawealthearn@gmail.com
-                </span>
-              </div>
+              </a>
             </div>
             <div className="flex items-center gap-4">
               <select className="bg-transparent border border-white/20 rounded px-2 py-1 text-white text-sm">
@@ -45,7 +45,15 @@ export function Header() {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-2">
               <Link href="/" className="flex items-center space-x-2">
-                <img src="/logo.png" alt="Vasawealthearn" className="h-8 w-auto" />
+                <Image 
+                  src="/logo.png" 
+                  alt="Vasawealthearn" 
+                  width={32}
+                  height={32}
+                  className="h-8 w-auto"
+                  priority
+                  loading="eager"
+                />
                 <span className="text-xl lg:text-2xl font-bold text-[#0c3a30] hover:text-[#0c3a30]/90">
                   Vasawealthearn
                 </span>
@@ -65,6 +73,16 @@ export function Header() {
             </div>
 
             <div className="flex items-center gap-2 lg:gap-4">
+              <a 
+                href="https://t.me/vasawealthearn" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hidden sm:flex items-center gap-2 text-gray-700 hover:text-[#0c3a30] transition-colors"
+                title="Join us on Telegram"
+              >
+                <MessageCircle className="w-5 h-5" />
+                <span className="hidden lg:inline text-sm font-medium">Telegram</span>
+              </a>
               <Link href="/login" className="hidden sm:block">
                 <Button variant="outline" className="bg-transparent text-sm">
                   Login
@@ -96,6 +114,15 @@ export function Header() {
                   </a>
                   <a href="#" className="text-gray-700 hover:text-[#0c3a30] font-medium py-2">
                     Contact
+                  </a>
+                  <a 
+                    href="https://t.me/vasawealthearn" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-gray-700 hover:text-[#0c3a30] font-medium py-2"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                    <span>Telegram</span>
                   </a>
                   <div className="pt-4 border-t sm:hidden">
                     <Link href="/login">

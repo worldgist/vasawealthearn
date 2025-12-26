@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 
 export function AboutSection() {
   const [activeTab, setActiveTab] = useState("mission")
@@ -94,10 +95,13 @@ export function AboutSection() {
             {/* Right - Image */}
             <div className="relative">
               <div className="bg-white rounded-2xl p-6 shadow-sm">
-                <img
+                <Image
                   src={tabContent[activeTab as keyof typeof tabContent].image || "/placeholder.svg"}
                   alt={tabContent[activeTab as keyof typeof tabContent].title}
+                  width={500}
+                  height={256}
                   className="w-full h-64 object-contain"
+                  loading="lazy"
                 />
               </div>
             </div>

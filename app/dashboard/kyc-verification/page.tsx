@@ -66,6 +66,16 @@ export default function KYCVerificationPage() {
     licenseState: "",
     licenseExpiry: "",
 
+    // ID Card Information
+    idCardNumber: "",
+    idCardIssuingCountry: "",
+    idCardExpiry: "",
+
+    // Passport Information
+    passportNumber: "",
+    passportIssuingCountry: "",
+    passportExpiry: "",
+
     // Address Information
     streetAddress: "",
     city: "",
@@ -76,12 +86,20 @@ export default function KYCVerificationPage() {
     // Document Uploads
     licenseFront: null as File | null,
     licenseBack: null as File | null,
+    idCardFront: null as File | null,
+    idCardBack: null as File | null,
+    passportFront: null as File | null,
+    passportBack: null as File | null,
     selfie: null as File | null,
   })
 
   const [uploadPreviews, setUploadPreviews] = useState({
     licenseFront: "",
     licenseBack: "",
+    idCardFront: "",
+    idCardBack: "",
+    passportFront: "",
+    passportBack: "",
     selfie: "",
   })
 
@@ -238,7 +256,36 @@ export default function KYCVerificationPage() {
     setUploadPreviews((prev) => ({ ...prev, [field]: "" }))
   }
 
+  const validateCurrentStep = () => {
+    switch (currentStep) {
+      case 1:
+        // Personal Information - required: firstName, lastName, dateOfBirth, ssn
+        return formData.firstName && formData.lastName && formData.dateOfBirth && formData.ssn
+      case 2:
+        // Address Verification - required: streetAddress, city, state, zipCode
+        return formData.streetAddress && formData.city && formData.state && formData.zipCode
+      case 3:
+        // Document Upload - required: licenseFront, licenseBack, licenseNumber, licenseState, licenseExpiry
+        const hasLicenseFront = formData.licenseFront || uploadPreviews.licenseFront
+        const hasLicenseBack = formData.licenseBack || uploadPreviews.licenseBack
+        return hasLicenseFront && hasLicenseBack && formData.licenseNumber && formData.licenseState && formData.licenseExpiry
+      case 4:
+        // Identity Verification - required: selfie
+        return formData.selfie || uploadPreviews.selfie
+      default:
+        return true
+    }
+  }
+
   const nextStep = () => {
+    if (!validateCurrentStep()) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields before proceeding to the next step.",
+        variant: "destructive",
+      })
+      return
+    }
     if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1)
     }
@@ -280,24 +327,61 @@ export default function KYCVerificationPage() {
       return
     }
 
-    // Check if documents are uploaded (either new files or existing URLs)
+    // Check if at least one form of ID is uploaded
     const hasLicenseFront = formData.licenseFront || uploadPreviews.licenseFront
     const hasLicenseBack = formData.licenseBack || uploadPreviews.licenseBack
+    const hasIdCardFront = formData.idCardFront || uploadPreviews.idCardFront
+    const hasIdCardBack = formData.idCardBack || uploadPreviews.idCardBack
+    const hasPassportFront = formData.passportFront || uploadPreviews.passportFront
+    const hasPassportBack = formData.passportBack || uploadPreviews.passportBack
     const hasSelfie = formData.selfie || uploadPreviews.selfie
 
-    if (!hasLicenseFront || !hasLicenseBack || !hasSelfie) {
+    // At least one complete ID document set is required
+    const hasLicense = hasLicenseFront && hasLicenseBack
+    const hasIdCard = hasIdCardFront && hasIdCardBack
+    const hasPassport = hasPassportFront && hasPassportBack
+
+    if (!hasSelfie) {
       toast({
         title: "Validation Error",
-        description: "Please upload all required documents (license front, back, and selfie).",
+        description: "Please upload a selfie photo.",
         variant: "destructive",
       })
       return
     }
 
-    if (!formData.licenseNumber || !formData.licenseState || !formData.licenseExpiry) {
+    if (!hasLicense && !hasIdCard && !hasPassport) {
+      toast({
+        title: "Validation Error",
+        description: "Please upload at least one complete form of identification (Driver's License, ID Card, or Passport - both sides required).",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Validate the selected ID type has all required information
+    if (hasLicense && (!formData.licenseNumber || !formData.licenseState || !formData.licenseExpiry)) {
       toast({
         title: "Validation Error",
         description: "Please fill in all driver's license information.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (hasIdCard && (!formData.idCardNumber || !formData.idCardIssuingCountry || !formData.idCardExpiry)) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all ID card information.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (hasPassport && (!formData.passportNumber || !formData.passportIssuingCountry || !formData.passportExpiry)) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all passport information.",
         variant: "destructive",
       })
       return
@@ -323,6 +407,10 @@ export default function KYCVerificationPage() {
       // Upload documents to storage (only if new files are provided)
       let licenseFrontUrl = uploadPreviews.licenseFront || ""
       let licenseBackUrl = uploadPreviews.licenseBack || ""
+      let idCardFrontUrl = uploadPreviews.idCardFront || ""
+      let idCardBackUrl = uploadPreviews.idCardBack || ""
+      let passportFrontUrl = uploadPreviews.passportFront || ""
+      let passportBackUrl = uploadPreviews.passportBack || ""
       let selfieUrl = uploadPreviews.selfie || ""
 
       try {
@@ -334,6 +422,26 @@ export default function KYCVerificationPage() {
         if (formData.licenseBack) {
           const backUpload = await uploadKYCDocument(formData.licenseBack, user.id, "license-back")
           licenseBackUrl = backUpload.url
+        }
+
+        if (formData.idCardFront) {
+          const idFrontUpload = await uploadKYCDocument(formData.idCardFront, user.id, "id-card-front")
+          idCardFrontUrl = idFrontUpload.url
+        }
+
+        if (formData.idCardBack) {
+          const idBackUpload = await uploadKYCDocument(formData.idCardBack, user.id, "id-card-back")
+          idCardBackUrl = idBackUpload.url
+        }
+
+        if (formData.passportFront) {
+          const passportFrontUpload = await uploadKYCDocument(formData.passportFront, user.id, "passport-front")
+          passportFrontUrl = passportFrontUpload.url
+        }
+
+        if (formData.passportBack) {
+          const passportBackUpload = await uploadKYCDocument(formData.passportBack, user.id, "passport-back")
+          passportBackUrl = passportBackUpload.url
         }
 
         if (formData.selfie) {
@@ -358,16 +466,26 @@ export default function KYCVerificationPage() {
         last_name: formData.lastName,
         date_of_birth: formData.dateOfBirth || null,
         ssn: formData.ssn || null,
-        license_number: formData.licenseNumber,
-        license_state: formData.licenseState,
+        license_number: formData.licenseNumber || null,
+        license_state: formData.licenseState || null,
         license_expiry: formData.licenseExpiry || null,
+        id_card_number: formData.idCardNumber || null,
+        id_card_issuing_country: formData.idCardIssuingCountry || null,
+        id_card_expiry: formData.idCardExpiry || null,
+        passport_number: formData.passportNumber || null,
+        passport_issuing_country: formData.passportIssuingCountry || null,
+        passport_expiry: formData.passportExpiry || null,
         street_address: formData.streetAddress,
         city: formData.city,
         state: formData.state,
         zip_code: formData.zipCode,
         country: formData.country,
-        license_front_url: licenseFrontUrl,
-        license_back_url: licenseBackUrl,
+        license_front_url: licenseFrontUrl || null,
+        license_back_url: licenseBackUrl || null,
+        id_card_front_url: idCardFrontUrl || null,
+        id_card_back_url: idCardBackUrl || null,
+        passport_front_url: passportFrontUrl || null,
+        passport_back_url: passportBackUrl || null,
         selfie_url: selfieUrl,
         status: "pending",
         rejection_reason: null,
@@ -385,13 +503,22 @@ export default function KYCVerificationPage() {
           .eq("id", existingSubmission.id)
         submissionError = error
       } else {
-        const { error } = await supabase
+        const { data: newSubmission, error } = await supabase
           .from("kyc_submissions")
           .insert({
             user_id: user.id,
             ...submissionData,
+            submitted_at: new Date().toISOString(),
           })
+          .select()
+          .single()
         submissionError = error
+        
+        if (error) {
+          console.error("KYC submission error details:", error)
+        } else if (newSubmission) {
+          console.log("KYC submission created successfully:", newSubmission.id)
+        }
       }
 
       if (submissionError) {
@@ -795,35 +922,37 @@ export default function KYCVerificationPage() {
             {currentStep === 3 && (
               <div className="space-y-6">
                 <div className="text-center mb-6">
-                  <h3 className="text-lg font-medium text-gray-900">Upload Your Driver's License</h3>
+                  <h3 className="text-lg font-medium text-gray-900">Upload Your Identity Document</h3>
                   <p className="text-gray-600 mt-1">
-                    Please upload clear photos of both sides of your driver's license
+                    Please upload at least one form of identification (Driver's License, ID Card, or Passport)
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FileUploadCard
-                    title="Front of License"
-                    field="licenseFront"
-                    accept="image/*"
-                    icon={FileText}
-                    description="Upload the front side of your driver's license"
-                  />
-
-                  <FileUploadCard
-                    title="Back of License"
-                    field="licenseBack"
-                    accept="image/*"
-                    icon={FileText}
-                    description="Upload the back side of your driver's license"
-                  />
-                </div>
-
-                <div className="space-y-4">
-                  <h4 className="font-medium text-gray-900">Driver's License Information</h4>
+                {/* Driver's License Section */}
+                <div className="space-y-4 border rounded-lg p-6">
+                  <h4 className="font-medium text-gray-900 flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Driver's License (Optional)
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FileUploadCard
+                      title="Front of License"
+                      field="licenseFront"
+                      accept="image/*"
+                      icon={FileText}
+                      description="Upload the front side of your driver's license"
+                    />
+                    <FileUploadCard
+                      title="Back of License"
+                      field="licenseBack"
+                      accept="image/*"
+                      icon={FileText}
+                      description="Upload the back side of your driver's license"
+                    />
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <Label htmlFor="licenseNumber">License Number *</Label>
+                      <Label htmlFor="licenseNumber">License Number</Label>
                       <Input
                         id="licenseNumber"
                         value={formData.licenseNumber}
@@ -832,7 +961,7 @@ export default function KYCVerificationPage() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="licenseState">Issuing State *</Label>
+                      <Label htmlFor="licenseState">Issuing State</Label>
                       <Input
                         id="licenseState"
                         value={formData.licenseState}
@@ -841,12 +970,118 @@ export default function KYCVerificationPage() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="licenseExpiry">Expiry Date *</Label>
+                      <Label htmlFor="licenseExpiry">Expiry Date</Label>
                       <Input
                         id="licenseExpiry"
                         type="date"
                         value={formData.licenseExpiry}
                         onChange={(e) => handleInputChange("licenseExpiry", e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* ID Card Section */}
+                <div className="space-y-4 border rounded-lg p-6">
+                  <h4 className="font-medium text-gray-900 flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    National ID Card (Optional)
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FileUploadCard
+                      title="Front of ID Card"
+                      field="idCardFront"
+                      accept="image/*"
+                      icon={FileText}
+                      description="Upload the front side of your ID card"
+                    />
+                    <FileUploadCard
+                      title="Back of ID Card"
+                      field="idCardBack"
+                      accept="image/*"
+                      icon={FileText}
+                      description="Upload the back side of your ID card"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <Label htmlFor="idCardNumber">ID Card Number</Label>
+                      <Input
+                        id="idCardNumber"
+                        value={formData.idCardNumber}
+                        onChange={(e) => handleInputChange("idCardNumber", e.target.value)}
+                        placeholder="Enter ID card number"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="idCardIssuingCountry">Issuing Country</Label>
+                      <Input
+                        id="idCardIssuingCountry"
+                        value={formData.idCardIssuingCountry}
+                        onChange={(e) => handleInputChange("idCardIssuingCountry", e.target.value)}
+                        placeholder="e.g., United States"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="idCardExpiry">Expiry Date</Label>
+                      <Input
+                        id="idCardExpiry"
+                        type="date"
+                        value={formData.idCardExpiry}
+                        onChange={(e) => handleInputChange("idCardExpiry", e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Passport Section */}
+                <div className="space-y-4 border rounded-lg p-6">
+                  <h4 className="font-medium text-gray-900 flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Passport (Optional)
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FileUploadCard
+                      title="Front of Passport"
+                      field="passportFront"
+                      accept="image/*"
+                      icon={FileText}
+                      description="Upload the front page of your passport"
+                    />
+                    <FileUploadCard
+                      title="Back of Passport"
+                      field="passportBack"
+                      accept="image/*"
+                      icon={FileText}
+                      description="Upload the back page of your passport"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <Label htmlFor="passportNumber">Passport Number</Label>
+                      <Input
+                        id="passportNumber"
+                        value={formData.passportNumber}
+                        onChange={(e) => handleInputChange("passportNumber", e.target.value)}
+                        placeholder="Enter passport number"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="passportIssuingCountry">Issuing Country</Label>
+                      <Input
+                        id="passportIssuingCountry"
+                        value={formData.passportIssuingCountry}
+                        onChange={(e) => handleInputChange("passportIssuingCountry", e.target.value)}
+                        placeholder="e.g., United States"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="passportExpiry">Expiry Date</Label>
+                      <Input
+                        id="passportExpiry"
+                        type="date"
+                        value={formData.passportExpiry}
+                        onChange={(e) => handleInputChange("passportExpiry", e.target.value)}
                       />
                     </div>
                   </div>
@@ -970,7 +1205,11 @@ export default function KYCVerificationPage() {
           </Button>
 
           {currentStep < steps.length ? (
-            <Button onClick={nextStep} className="bg-[#c4d626] hover:bg-[#b8c423] text-black">
+            <Button 
+              onClick={nextStep} 
+              disabled={!validateCurrentStep()}
+              className="bg-[#c4d626] hover:bg-[#b8c423] text-black disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               Next
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>

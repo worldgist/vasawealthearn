@@ -1,4 +1,5 @@
 import { Users, CreditCard, Globe } from "lucide-react"
+import Image from "next/image"
 
 export function FeaturesSection() {
   return (
@@ -8,10 +9,13 @@ export function FeaturesSection() {
           {/* Left - Image */}
           <div className="relative">
             <div className="bg-[#9edd05] rounded-3xl p-8 relative overflow-hidden">
-              <img
+              <Image
                 src="/modern-banking-app.png"
                 alt="Banking App"
+                width={600}
+                height={320}
                 className="w-full h-80 object-contain relative z-10"
+                loading="lazy"
               />
               <div className="absolute top-4 right-4 w-20 h-20 bg-white/20 rounded-full animate-bounce"></div>
               <div className="absolute bottom-4 left-4 w-16 h-16 bg-white/10 rounded-full"></div>

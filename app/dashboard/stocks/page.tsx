@@ -55,6 +55,7 @@ export default function StocksPage() {
   const [walletBalance, setWalletBalance] = useState(0)
   const [totalInvested, setTotalInvested] = useState(0)
   const [totalEarned, setTotalEarned] = useState(0)
+  const [firstName, setFirstName] = useState("")
   const [buyAmounts, setBuyAmounts] = useState<{ [key: string]: string }>({})
   const [sellAmounts, setSellAmounts] = useState<{ [key: string]: string }>({})
   const [userHoldings, setUserHoldings] = useState<{ [key: string]: number }>({})
@@ -214,15 +215,16 @@ export default function StocksPage() {
 
       if (!user) return
 
-      // Load user balance
+      // Load user balance and first name
       const { data: profile } = await supabase
         .from("profiles")
-        .select("balance")
+        .select("balance, first_name")
         .eq("id", user.id)
         .single()
 
       if (profile) {
         setWalletBalance(Number(profile.balance) || 0)
+        setFirstName(profile.first_name || "")
       }
 
       // Load stock investments from database
@@ -567,7 +569,9 @@ export default function StocksPage() {
         {/* Header */}
         <div className="space-y-1 sm:space-y-2">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Stock Investment</h1>
-          <p className="text-sm sm:text-base text-gray-600">Trade stocks and build your investment portfolio</p>
+          <p className="text-sm sm:text-base text-gray-600">
+            {firstName ? `Welcome back, ${firstName}!` : "Trade stocks and build your investment portfolio"}
+          </p>
         </div>
 
         {/* Portfolio Summary Card */}

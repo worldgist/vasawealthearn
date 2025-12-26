@@ -18,7 +18,9 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: "Vasawealthearn - Fintech, Banking, & Finance",
   description: "Secure your fintech success for the future with innovative banking solutions",
-    generator: 'v0.app'
+  generator: 'v0.app',
+  viewport: 'width=device-width, initial-scale=1',
+  themeColor: '#0c3a30',
 }
 
 export default function RootLayout({

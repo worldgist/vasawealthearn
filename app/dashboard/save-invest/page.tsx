@@ -48,6 +48,7 @@ export default function SaveInvestPage() {
   const [walletBalance, setWalletBalance] = useState(0)
   const [totalInvested, setTotalInvested] = useState(0)
   const [totalEarned, setTotalEarned] = useState(0)
+  const [firstName, setFirstName] = useState("")
   const [buyAmounts, setBuyAmounts] = useState<{ [key: string]: string }>({})
   const [sellAmounts, setSellAmounts] = useState<{ [key: string]: string }>({})
   const [userHoldings, setUserHoldings] = useState<{ [key: string]: number }>({})
@@ -366,15 +367,16 @@ export default function SaveInvestPage() {
 
       if (!user) return
 
-      // Load user balance
+      // Load user balance and first name
       const { data: profile } = await supabase
         .from("profiles")
-        .select("balance")
+        .select("balance, first_name")
         .eq("id", user.id)
         .single()
 
       if (profile) {
         setWalletBalance(Number(profile.balance) || 0)
+        setFirstName(profile.first_name || "")
       }
 
       // Load crypto investments from database
@@ -476,10 +478,31 @@ export default function SaveInvestPage() {
     }
 
     const buyAmount = Number.parseFloat(amount)
+    
+    // Validate buy amount
+    if (isNaN(buyAmount) || buyAmount <= 0) {
+      toast({
+        title: "Invalid Amount",
+        description: "Please enter a valid amount greater than 0",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Validate crypto price
+    if (!crypto.price || crypto.price <= 0) {
+      toast({
+        title: "Invalid Price",
+        description: "Cryptocurrency price is not available. Please try again later.",
+        variant: "destructive",
+      })
+      return
+    }
+
     if (buyAmount > walletBalance) {
       toast({
         title: "Insufficient Balance",
-        description: "You don't have enough balance to complete this purchase",
+        description: `You don't have enough balance. Your balance is $${walletBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
         variant: "destructive",
       })
       return
@@ -490,18 +513,32 @@ export default function SaveInvestPage() {
     try {
       const {
         data: { user },
+        error: userError,
       } = await supabase.auth.getUser()
 
-      if (!user) {
+      if (userError || !user) {
+        console.error("Auth error:", userError)
         toast({
           title: "Error",
-          description: "You must be logged in to make investments.",
+          description: "You must be logged in to make investments. Please log in again.",
           variant: "destructive",
         })
+        setIsLoading((prev) => ({ ...prev, [`buy-${crypto.id}`]: false }))
         return
       }
 
       const cryptoAmount = buyAmount / crypto.price
+      
+      // Validate crypto amount
+      if (!isFinite(cryptoAmount) || cryptoAmount <= 0) {
+        toast({
+          title: "Calculation Error",
+          description: "Unable to calculate cryptocurrency amount. Please try again.",
+          variant: "destructive",
+        })
+        setIsLoading((prev) => ({ ...prev, [`buy-${crypto.id}`]: false }))
+        return
+      }
       
       // Generate reference number
       const referenceNumber = `CRYPTO-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
@@ -529,11 +566,27 @@ export default function SaveInvestPage() {
 
       if (investmentError) {
         console.error("Error saving investment:", investmentError)
-        throw investmentError
+        toast({
+          title: "Database Error",
+          description: investmentError.message || "Failed to save investment. Please try again.",
+          variant: "destructive",
+        })
+        setIsLoading((prev) => ({ ...prev, [`buy-${crypto.id}`]: false }))
+        return
+      }
+
+      if (!investment) {
+        toast({
+          title: "Error",
+          description: "Investment was not created. Please try again.",
+          variant: "destructive",
+        })
+        setIsLoading((prev) => ({ ...prev, [`buy-${crypto.id}`]: false }))
+        return
       }
 
       // Create transaction record
-      await supabase.from("transactions").insert({
+      const { error: transactionError } = await supabase.from("transactions").insert({
         user_id: user.id,
         transaction_type: "crypto_investment",
         amount: buyAmount,
@@ -544,6 +597,11 @@ export default function SaveInvestPage() {
         reference_id: investment.id,
       })
 
+      if (transactionError) {
+        console.error("Error creating transaction:", transactionError)
+        // Don't fail the purchase if transaction record fails, but log it
+      }
+
       // Update user balance
       const { data: profile } = await supabase
         .from("profiles")
@@ -553,12 +611,21 @@ export default function SaveInvestPage() {
 
       if (profile) {
         const newBalance = (Number(profile.balance) || 0) - buyAmount
-        await supabase
+        const { error: balanceError } = await supabase
           .from("profiles")
           .update({ balance: newBalance })
           .eq("id", user.id)
         
-        setWalletBalance(newBalance)
+        if (balanceError) {
+          console.error("Error updating balance:", balanceError)
+          toast({
+            title: "Warning",
+            description: "Investment was created but balance update failed. Please contact support.",
+            variant: "destructive",
+          })
+        } else {
+          setWalletBalance(newBalance)
+        }
       }
 
       // Reload user data to reflect new investment
@@ -579,10 +646,11 @@ export default function SaveInvestPage() {
       })
 
       setBuyAmounts((prev) => ({ ...prev, [crypto.id]: "" }))
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Purchase error:", error)
       toast({
         title: "Purchase Failed",
-        description: "There was an error processing your purchase. Please try again.",
+        description: error?.message || "There was an error processing your purchase. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -714,7 +782,9 @@ export default function SaveInvestPage() {
         {/* Header */}
         <div className="space-y-1 sm:space-y-2">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Crypto Investment</h1>
-          <p className="text-sm sm:text-base text-gray-600">Buy and sell cryptocurrencies to grow your portfolio</p>
+          <p className="text-sm sm:text-base text-gray-600">
+            {firstName ? `Welcome back, ${firstName}!` : "Buy and sell cryptocurrencies to grow your portfolio"}
+          </p>
         </div>
 
         {/* Wallet Balance Card */}
@@ -860,9 +930,23 @@ export default function SaveInvestPage() {
                         onChange={(e) => setBuyAmounts((prev) => ({ ...prev, [crypto.id]: e.target.value }))}
                       />
                       <Button
+                        type="button"
                         className="w-full bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm"
-                        onClick={() => handleBuy(crypto)}
-                        disabled={isLoading[`buy-${crypto.id}`]}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          console.log("Buy button clicked for:", crypto.symbol, "Amount:", buyAmounts[crypto.id])
+                          if (!buyAmounts[crypto.id] || Number.parseFloat(buyAmounts[crypto.id] || "0") <= 0) {
+                            toast({
+                              title: "Invalid Amount",
+                              description: "Please enter a valid amount to buy",
+                              variant: "destructive",
+                            })
+                            return
+                          }
+                          handleBuy(crypto)
+                        }}
+                        disabled={isLoading[`buy-${crypto.id}`] || !buyAmounts[crypto.id] || Number.parseFloat(buyAmounts[crypto.id] || "0") <= 0}
                       >
                         {isLoading[`buy-${crypto.id}`] ? (
                           <>

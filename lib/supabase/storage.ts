@@ -74,6 +74,30 @@ export async function uploadSupportAttachment(file: File, userId: string, ticket
   }
 }
 
+export async function uploadReceipt(file: File, userId: string, receiptType: string = "general") {
+  const supabase = createClient()
+
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-")
+  const fileExt = file.name.split(".").pop()
+  const fileName = `${userId}/${receiptType}-${timestamp}.${fileExt}`
+
+  const { data, error } = await supabase.storage.from("receipts").upload(fileName, file, {
+    cacheControl: "3600",
+    upsert: false,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  const { data: urlData } = supabase.storage.from("receipts").getPublicUrl(fileName)
+
+  return {
+    path: data.path,
+    url: urlData.publicUrl,
+  }
+}
+
 export async function deleteFile(bucket: string, path: string) {
   const supabase = createClient()
 

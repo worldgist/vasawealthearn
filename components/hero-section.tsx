@@ -1,6 +1,7 @@
 import { Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import Image from "next/image"
 
 export function HeroSection() {
   return (
@@ -46,20 +47,29 @@ export function HeroSection() {
               {/* User Avatars */}
               <div className="flex items-center bg-white rounded-2xl p-4 shadow-sm">
                 <div className="flex -space-x-2">
-                  <img
+                  <Image
                     src="/professional-woman-avatar.png"
                     alt="User"
+                    width={40}
+                    height={40}
                     className="w-10 h-10 rounded-full border-2 border-white"
+                    loading="lazy"
                   />
-                  <img
+                  <Image
                     src="/professional-man-avatar.png"
                     alt="User"
+                    width={40}
+                    height={40}
                     className="w-10 h-10 rounded-full border-2 border-white"
+                    loading="lazy"
                   />
-                  <img
+                  <Image
                     src="/business-person-avatar.png"
                     alt="User"
+                    width={40}
+                    height={40}
                     className="w-10 h-10 rounded-full border-2 border-white"
+                    loading="lazy"
                   />
                   <div className="w-10 h-10 rounded-full bg-[#9edd05] flex items-center justify-center text-sm font-bold text-[#0c3a30] border-2 border-white">
                     8k+
@@ -94,7 +104,7 @@ export function HeroSection() {
               </div>
               <h3 className="text-xl font-bold text-gray-900">Create A Card That Is Unique And Customized</h3>
               <div className="bg-[#def1ee] rounded-2xl p-6">
-                <img src="/modern-credit-card.png" alt="Credit Card" className="w-full h-32 object-contain" />
+                <Image src="/modern-credit-card.png" alt="Credit Card" width={400} height={128} className="w-full h-32 object-contain" loading="lazy" />
               </div>
             </div>
           </div>
@@ -106,7 +116,7 @@ export function HeroSection() {
               </div>
               <h3 className="text-xl font-bold text-gray-900">Advanced Security & Protection</h3>
               <div className="bg-[#def1ee] rounded-2xl p-6">
-                <img src="/security-shield-icon.png" alt="Security" className="w-full h-32 object-contain" />
+                <Image src="/security-shield-icon.png" alt="Security" width={400} height={128} className="w-full h-32 object-contain" loading="lazy" />
               </div>
             </div>
           </div>
@@ -118,7 +128,7 @@ export function HeroSection() {
               </div>
               <h3 className="text-xl font-bold text-gray-900">Real-time Analytics & Insights</h3>
               <div className="bg-[#def1ee] rounded-2xl p-6">
-                <img src="/financial-analytics-dashboard.png" alt="Analytics" className="w-full h-32 object-contain" />
+                <Image src="/financial-analytics-dashboard.png" alt="Analytics" width={400} height={128} className="w-full h-32 object-contain" loading="lazy" />
               </div>
             </div>
           </div>
