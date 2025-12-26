@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Menu, X, MessageCircle } from "lucide-react"
+import { Menu, X } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -16,17 +16,6 @@ export function Header() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center text-sm">
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-2 md:mb-0">
-              <a 
-                href="https://t.me/vasawealthearn" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 justify-center sm:justify-start hover:opacity-80 transition-opacity"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span>
-                  <strong>Telegram:</strong> @vasawealthearn
-                </span>
-              </a>
             </div>
             <div className="flex items-center gap-4">
               <select className="bg-transparent border border-white/20 rounded px-2 py-1 text-white text-sm">
@@ -73,16 +62,6 @@ export function Header() {
             </div>
 
             <div className="flex items-center gap-2 lg:gap-4">
-              <a 
-                href="https://t.me/vasawealthearn" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="hidden sm:flex items-center gap-2 text-gray-700 hover:text-[#0c3a30] transition-colors"
-                title="Join us on Telegram"
-              >
-                <MessageCircle className="w-5 h-5" />
-                <span className="hidden lg:inline text-sm font-medium">Telegram</span>
-              </a>
               <Link href="/login" className="hidden sm:block">
                 <Button variant="outline" className="bg-transparent text-sm">
                   Login
@@ -114,15 +93,6 @@ export function Header() {
                   </a>
                   <a href="#" className="text-gray-700 hover:text-[#0c3a30] font-medium py-2">
                     Contact
-                  </a>
-                  <a 
-                    href="https://t.me/vasawealthearn" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-gray-700 hover:text-[#0c3a30] font-medium py-2"
-                  >
-                    <MessageCircle className="w-5 h-5" />
-                    <span>Telegram</span>
                   </a>
                   <div className="pt-4 border-t sm:hidden">
                     <Link href="/login">

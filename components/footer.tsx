@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ArrowUpRight, MapPin, Mail, Phone } from "lucide-react"
+import { ArrowUpRight, MapPin, Mail, Phone, MessageCircle } from "lucide-react"
 
 export function Footer() {
   return (
@@ -104,6 +104,20 @@ export function Footer() {
                 <div>
                   <span className="text-white font-semibold">Phone:</span>
                   <p className="text-white/80">+1 513-387-9992</p>
+                </div>
+              </li>
+              <li className="flex items-start gap-3">
+                <MessageCircle className="w-5 h-5 text-[#9edd05] flex-shrink-0 mt-0.5" />
+                <div>
+                  <span className="text-white font-semibold">Telegram:</span>
+                  <a 
+                    href="https://t.me/vasawealthearn" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-white/80 hover:text-white transition-colors"
+                  >
+                    @vasawealthearn
+                  </a>
                 </div>
               </li>
             </ul>
